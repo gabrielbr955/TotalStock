@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Item</title>
+</head>
+<body>
+    <h1>Search Item</h1>
+
+    <form method="get">
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+
+    <hr>
+
+    {% if items %}
+        <h2>Search Results:</h2>
+        <ul>
+            {% for item in items %}
+                <li>{{ item.name }} - Location: {{ item.stock.location.name }} - Site: {{ item.stock.location.Site.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

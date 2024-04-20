@@ -1,0 +1,18 @@
+<h1>Todowise app</h1>
+<p>Current user: {{user.first_name}} (<a href="{% url 'app_logout' %}">Logout</a>)</p>
+
+<h3>{{ list.title }}</h3>
+
+<ul>
+    {% for item in list.items.all %}
+    <li>{{ item.title }} (<a href="{% url 'remove_item' list.id item.id %}">X</a>)</li>
+    {% endfor %}
+</ul>
+
+<h3>Add Item</h3>
+<form method="post" action="{% url 'add_item' list.id %}">
+    {% csrf_token %}
+    <input type="text" name="item_title"><br/>
+    <input type="submit">
+
+</form>

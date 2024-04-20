@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TotalStock App</title>
+</head>
+<body>
+    <h1>TotalStock App</h1>
+
+    <p>Welcome, {{ user.first_name }}! (<a href="{% url 'app_logout' %}">Logout</a>)</p>
+
+    <h2>Actions:</h2>
+
+    <ul>
+        <li><a>Register Consumption</a></li>
+        <li><a>Register Receiving</a></li>
+        <li><a href="{% url 'create_item' %}">Create Item</a></li>
+        <li><a href="{% url 'search_item' %}">Search Item</a></li>
+        <li><a>List Locations</a></li>
+    </ul>
+</body>
+</html>
