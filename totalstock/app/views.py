@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from .forms import ItemForm, SearchItemForm
+from .forms import ItemForm, SearchItemForm, ConsumptionForm
 
 from .models import User, Site, Location, Item, Stock
 
@@ -51,13 +51,35 @@ def search_item(request):
 
     return render(request, 'search_item.html', {'form': form, 'items': items})
 
-"""
 
-def add_item(request, list_id):
-    item_title = request.POST.get('item_title')
-    list = get_object_or_404(List, pk=list_id, user=request.user)
-    item = Item(title=item_title, list=list)
-    item.save()
-    return redirect('todo_list', list_id=list_id)
+def consumption_view(request, stock_id):
+    stock = get_object_or_404(Stock, id=stock_id)  # Get Stock object by ID
+    item = stock.item  # Get related Item object
+    site = stock.location.Site  # Get Site related to the Stock's location
 
-"""
+    message =""
+
+    if request.method == 'POST':
+        form = ConsumptionForm(request.POST)
+        if form.is_valid():
+            units_used = form.cleaned_data['units_used']
+            if units_used > 0 and units_used <= stock.quantity:
+                stock.quantity -= units_used  # Decrease stock amount
+                stock.save()                
+                message = "Stock quantity updated."
+            else:
+                message = "Error: Invalid number of units. Please enter a valid quantity."
+    else:
+        form = ConsumptionForm()
+
+    context = {
+        'item_id': item.id,
+        'item_name': item.name,
+        'item_description': item.description,
+        'location': stock.location.name,
+        'site_name': site.name,
+        'stock_quantity': stock.quantity,
+        'form': form,
+        'message': message,
+    }
+    return render(request, 'consumption.html', context)

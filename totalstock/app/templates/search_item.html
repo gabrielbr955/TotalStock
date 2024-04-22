@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Item</title>
-</head>
-<body>
+{% extends 'app.html' %}
+
+{% block content %}
     <h1>Search Item</h1>
 
     <form method="get">
@@ -17,11 +12,38 @@
 
     {% if items %}
         <h2>Search Results:</h2>
-        <ul>
-            {% for item in items %}
-                <li>{{ item.name }} - Location: {{ item.stock.location.name }} - Site: {{ item.stock.location.Site.name }}</li>
-            {% endfor %}
-        </ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Location</th>
+                    <th>Site</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in items %}
+                    <tr>
+                        <td>{{ stock.item.id }}</td>
+                        <td>{{ stock.item.name }}</td>
+                        <td>{{ stock.quantity }}</td>
+                        <td>{{ stock.location.name }}</td>
+                        <td>{{ stock.location.Site.name }}</td>
+                        <td>
+                            <form method="post" action="{% url 'consumption' stock.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Consumption</button>
+                            </form>
+                            <form method="post" action="">
+                                {% csrf_token %}
+                                <button type="submit">Adjust</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
-</body>
-</html>
+{% endblock %}

@@ -1,18 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Item</title>
-</head>
-<body>
+{% extends 'app.html' %}
+
+{% block content %}
     <h1>Create Item</h1>
 
-    <form method="post">
+    <form method="post" class="item-form">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% for field in form %}
+            <div class="form-row">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {% if field.name == 'description' %}
+                    <textarea id="{{ field.id_for_label }}" name="{{ field.name }}" rows="4" cols="50">{{ field.value }}</textarea>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+            </div>
+        {% endfor %}
 
-        <button type="submit">Create Item</button>
+        <div class="form-row">
+            <button type="submit">Create Item</button>
+        </div>
     </form>
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,87 @@
+
+
+/* Styling for sidebar */
+.sidebar {
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #f0f0f0;
+    padding: 15px;
+}
+
+/* Styling for main content area */
+.content {
+    margin-left: 200px; /* Adjust based on sidebar width */
+    padding: 50px;
+}
+
+.sidebar ul {
+    list-style: none; /* Remove default bullet points */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+}
+
+/* Styling for sidebar button links */
+.sidebar-button {
+    display: block;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover effect for sidebar button links */
+.sidebar-button:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+
+.form-row {
+    display: grid;    
+	align-items: center;
+    grid-template-columns: minmax(0, 200px) minmax(100px, 600px); /* Left column for labels, right column for inputs */
+    grid-gap: 10px; /* Spacing between grid items */
+    margin-bottom: 15px; /* Bottom margin for each form row */
+}
+
+/* Style for form labels */
+.form-row label {
+    text-align: right; /* Align labels to the right */
+    padding-right: 10px; /* Right padding for labels */
+}
+
+/* Style for form inputs (text fields, etc.) */
+.form-row input[type="text"],
+.form-row input[type="number"],
+.form-row textarea {
+    width: 100%; /* Take up full width of the grid cell */
+    padding: 8px; /* Padding for input fields */
+    border: 1px solid #ccc; /* Border for input fields */
+    border-radius: 4px; /* Rounded corners for input fields */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+/* Style for the submit button */
+.item-form button[type="submit"] {
+    padding: 10px 20px; /* Padding for button */
+    background-color: #007bff; /* Button background color */
+    color: #fff; /* Button text color */
+    border: none; /* Remove button border */
+    border-radius: 4px; /* Rounded corners for button */
+    cursor: pointer; /* Cursor style on hover */
+    transition: background-color 0.3s ease; /* Smooth background color transition on hover */
+}
+
+/* Hover effect for the submit button */
+.item-form button[type="submit"]:hover {
+    background-color: #0056b3; /* Darker background color on hover */
+}

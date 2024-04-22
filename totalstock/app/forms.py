@@ -1,5 +1,5 @@
 from django import forms
-from .models import Item
+from .models import Item, Stock
 
 
 class ItemForm(forms.ModelForm):
@@ -10,25 +10,34 @@ class ItemForm(forms.ModelForm):
 
 class SearchItemForm(forms.Form):
     name = forms.CharField(required=False, label='Item Name')
+    description = forms.CharField(required=False, label='Description')
     location = forms.CharField(required=False, label='Location')
     site = forms.CharField(required=False, label='Site')
 
     def search(self):
         # Retrieve cleaned data from the form
         name = self.cleaned_data.get('name')
+        description = self.cleaned_data.get('description')
         location = self.cleaned_data.get('location')
         site = self.cleaned_data.get('site')
 
         # Filter items based on provided parameters
-        items = Item.objects.all()
+        stocks = Stock.objects.all()
 
         if name:
-            items = items.filter(name__icontains=name)
+            stocks = stocks.filter(item__name__icontains=name)
+
+        if description:
+            stocks = stocks.filter(item__description__icontains=description)
 
         if location:
-            items = items.filter(stock__location__name__icontains=location)
+            stocks = stocks.filter(location__name__icontains=location)
 
         if site:
-            items = items.filter(stock__location__Site__name__icontains=site)
+            stocks = stocks.filter(location__Site__name__icontains=site)
 
-        return items
+        # Return the list of filtered stocks
+        return stocks
+
+class ConsumptionForm(forms.Form):
+    units_used = forms.IntegerField(label='Units Used', min_value=1)
