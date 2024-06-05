@@ -1,0 +1,30 @@
+{% extends 'app.html' %}
+
+{% block content %}
+    <h1>Issuance</h1>
+
+    <h2>Item Details</h2>
+    <p>ID: {{ item_id }}</p>
+    <p>Name: {{ item_name }}</p>
+    <p>Description: {{ item_description }}</p>
+    <p>Location: {{ location }}</p>
+    <p>Site: {{ site_name }}</p>
+    <p>Current Stock Amount: {{ stock_quantity }}</p>
+
+    <hr>
+
+
+    <h2>Record Consumption</h2>
+    {% if message %}
+        <p style="color: {% if 'Error' in message %}red{% else %}green{% endif %};">{{ message }}</p>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Record Consumption</button>
+    </form>
+
+    <br>
+    <a href="{% url 'search_item' %}?name={{ request.GET.name }}&description={{ request.GET.description }}&location={{ request.GET.location }}&site={{ request.GET.site }}">Back to Search</a>
+{% endblock %}

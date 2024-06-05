@@ -10,5 +10,8 @@ urlpatterns = [
     path('logout/', views.app_logout, name='app_logout'),
     path('create_item/', views.create_item, name='create_item'),
     path('search_item/', views.search_item, name='search_item'),
-    path('consumption/<int:stock_id>/', views.consumption_view, name='consumption'),
-    ]
+    path('issuance/<int:stock_id>/', views.issuance, name='issuance'),
+    path('receiving/', views.receiving, name='receiving'),
+    path('adjust_stock/<int:stock_id>/', views.adjust_stock, name='adjust_stock'),
+    path('manage_users/', views.manage_users, name='manage_users'),
+]

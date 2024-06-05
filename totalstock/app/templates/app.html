@@ -19,8 +19,12 @@
 
     <hr>
     <ul>
-        <li><a href="{% url 'create_item' %}" class="sidebar-button">Create Item</a></li>
         <li><a href="{% url 'search_item' %}" class="sidebar-button">Search Item</a></li>
+        {% if user.is_manager %}
+            <li><a href="{% url 'create_item' %}" class="sidebar-button">Create Item</a></li>
+            <li><a href="{% url 'receiving' %}" class="sidebar-button">Receiving</a></li>
+            <li><a href="{% url 'manage_users' %}" class="sidebar-button">Manage Users</a></li>
+        {% endif %}
         <!-- Add more sidebar links as needed -->
     </ul>
 </div>

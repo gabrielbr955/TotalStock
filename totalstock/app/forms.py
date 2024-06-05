@@ -1,18 +1,21 @@
 from django import forms
-from .models import Item, Stock
+from .models import Item, Stock, Site, Location
 
 
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
-        fields = ['name', 'description', 'weight', 'dimension_x', 'dimension_y', 'dimension_z', 'unit_of_measure']
+        fields = ['name', 'description', 'price', 'weight', 'unit_of_measure']
 
 
 class SearchItemForm(forms.Form):
     name = forms.CharField(required=False, label='Item Name')
     description = forms.CharField(required=False, label='Description')
-    location = forms.CharField(required=False, label='Location')
-    site = forms.CharField(required=False, label='Site')
+    location = forms.ModelChoiceField(queryset=Location.objects.all(), required=False, label='Location')
+    site = forms.ModelChoiceField(queryset=Site.objects.all(), required=False, label='Site')
+
+#    location = forms.CharField(required=False, label='Location')
+#    site = forms.CharField(required=False, label='Site')
 
     def search(self):
         # Retrieve cleaned data from the form
@@ -39,5 +42,25 @@ class SearchItemForm(forms.Form):
         # Return the list of filtered stocks
         return stocks
 
-class ConsumptionForm(forms.Form):
+class IssuanceForm(forms.Form):
     units_used = forms.IntegerField(label='Units Used', min_value=1)
+
+
+class ReceivingForm(forms.Form):
+    item = forms.ModelChoiceField(queryset=Item.objects.all(), label='Item')
+    site = forms.ModelChoiceField(queryset=Site.objects.all(), label='Site')
+    quantity = forms.DecimalField(label='Quantity')
+
+class AdjustStockForm(forms.Form):
+
+    def __init__(self, *args, initial_site=None, initial_location=None, **kwargs):
+        super(AdjustStockForm, self).__init__(*args, **kwargs)
+        if initial_site:
+            self.fields['site'].initial = initial_site
+        if initial_location:
+            self.fields['location'].initial = initial_location
+
+    #stock = forms.ModelChoiceField(queryset=Stock.objects.all(), label='Stock')
+    quantity = forms.DecimalField(max_digits=10, decimal_places=2, min_value=0, label='New Quantity')
+    site = forms.ModelChoiceField(queryset=Site.objects.all(), label='Site')
+    location = forms.ModelChoiceField(queryset=Location.objects.all(), label='Location')

@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
+    is_manager = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
@@ -27,12 +28,9 @@ class Item(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
 
-    weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    price = models.DecimalField(max_digits=12, decimal_places=2)
 
-    # Dimensions
-    dimension_x = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    dimension_y = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    dimension_z = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     # Unit of Measure
     UNIT_CHOICES = [
@@ -53,7 +51,9 @@ class Item(models.Model):
 class Stock(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.item.name} - Location {self.location.name}"
+

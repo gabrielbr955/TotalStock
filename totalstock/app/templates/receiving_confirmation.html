@@ -1,0 +1,19 @@
+<!-- receiving_confirmation.html -->
+{% extends 'receiving.html' %}
+{% block content %}
+    <h1>Receiving Confirmation</h1>
+    <p>Item: {{ item.name }}</p>
+    <p>Site: {{ site.name }}</p>
+    <p>Quantity: {{ quantity }}</p>
+    
+    {% if existing_stocks %}
+        <h2>Existing Stocks:</h2>
+        <ul>
+            {% for stock in existing_stocks %}
+                <li>Location: {{ stock.location.name }} - Quantity: {{ stock.quantity }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No existing stock found for this item at the selected site.</p>
+    {% endif %}
+{% endblock %}

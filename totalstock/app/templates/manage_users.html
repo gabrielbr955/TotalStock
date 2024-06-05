@@ -1,0 +1,36 @@
+{% extends 'app.html' %}
+
+{% block content %}
+    <h1>Manage Users</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Is Manager</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.is_manager }}</td>
+                    <td>
+                        <form method="post" action="{% url 'toggle_manager' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Toggle Manager</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

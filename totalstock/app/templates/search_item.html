@@ -18,8 +18,9 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Amount</th>
-                    <th>Location</th>
+                    <th>Price</th>
                     <th>Site</th>
+                    <th>Location</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -29,14 +30,15 @@
                         <td>{{ stock.item.id }}</td>
                         <td>{{ stock.item.name }}</td>
                         <td>{{ stock.quantity }}</td>
-                        <td>{{ stock.location.name }}</td>
+                        <td>{{ stock.item.price }}</td>
                         <td>{{ stock.location.Site.name }}</td>
+                        <td>{{ stock.location.name }}</td>
                         <td>
-                            <form method="post" action="{% url 'consumption' stock.id %}">
+                            <form method="post" style="display: inline;" action="{% url 'issuance' stock.id %}">
                                 {% csrf_token %}
                                 <button type="submit">Consumption</button>
                             </form>
-                            <form method="post" action="">
+                            <form method="post" style="display: inline;" action="{% url 'adjust_stock' stock.id %}">
                                 {% csrf_token %}
                                 <button type="submit">Adjust</button>
                             </form>
