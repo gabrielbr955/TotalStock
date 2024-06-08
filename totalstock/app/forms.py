@@ -17,7 +17,7 @@ class SearchItemForm(forms.Form):
 #    location = forms.CharField(required=False, label='Location')
 #    site = forms.CharField(required=False, label='Site')
 
-    def search(self):
+    def search_stock(self):
         # Retrieve cleaned data from the form
         name = self.cleaned_data.get('name')
         description = self.cleaned_data.get('description')
@@ -42,14 +42,33 @@ class SearchItemForm(forms.Form):
         # Return the list of filtered stocks
         return stocks
 
+    def search_remaining_items(self):
+        # Retrieve cleaned data from the form
+        name = self.cleaned_data.get('name')
+        description = self.cleaned_data.get('description')
+        location = self.cleaned_data.get('location')
+        site = self.cleaned_data.get('site')
+
+        # Filter items based on provided parameters
+        remaining_items = Item.objects.exclude(stock__isnull=False)
+
+        if name:
+            remaining_items = remaining_items.filter(name__icontains=name)
+
+        if description:
+            remaining_items = remaining_items.filter(description__icontains=description)
+
+        if site:
+            remaining_items = remaining_items.filter(stock__location__Site=site)
+
+        if location:
+            remaining_items = remaining_items.filter(stock__location=location)
+
+        return remaining_items
+
 class IssuanceForm(forms.Form):
     units_used = forms.IntegerField(label='Units Used', min_value=1)
 
-
-class ReceivingForm(forms.Form):
-    item = forms.ModelChoiceField(queryset=Item.objects.all(), label='Item')
-    site = forms.ModelChoiceField(queryset=Site.objects.all(), label='Site')
-    quantity = forms.DecimalField(label='Quantity')
 
 class AdjustStockForm(forms.Form):
 

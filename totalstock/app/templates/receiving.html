@@ -1,9 +1,0 @@
-{% extends 'app.html' %}
-{% block content %}
-    <h1>Receiving Page</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Check Stock</button>
-    </form>
-{% endblock %}

@@ -36,11 +36,15 @@
                         <td>
                             <form method="post" style="display: inline;" action="{% url 'issuance' stock.id %}">
                                 {% csrf_token %}
-                                <button type="submit">Consumption</button>
+                                <button type="submit">Consume</button>
                             </form>
                             <form method="get" style="display: inline;" action="{% url 'adjust_stock' stock.id %}">
                                 {% csrf_token %}
                                 <button type="submit">Adjust</button>
+                            </form>
+                            <form method="post" style="display: inline;" action="">
+                                {% csrf_token %}
+                                <button type="submit">Receive</button>
                             </form>
                         </td>
                     </tr>
@@ -48,4 +52,33 @@
             </tbody>
         </table>
     {% endif %}
+
+    {% if remaining_items %}
+        <h2>Remaining Items:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Add Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in remaining_items %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.name }}</td>
+                        <td>
+                            <form method="post" action="">
+                                {% csrf_token %}
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
+                                <button type="submit">Create Stock Entry</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
 {% endblock %}

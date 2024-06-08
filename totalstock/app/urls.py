@@ -11,7 +11,6 @@ urlpatterns = [
     path('create_item/', views.create_item, name='create_item'),
     path('search_item/', views.search_item, name='search_item'),
     path('issuance/<int:stock_id>/', views.issuance, name='issuance'),
-    path('receiving/', views.receiving, name='receiving'),
     path('adjust_stock/<int:stock_id>/', views.adjust_stock, name='adjust_stock'),
     path('manage_users/', views.manage_users, name='manage_users'),
 ]

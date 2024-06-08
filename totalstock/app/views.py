@@ -2,8 +2,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import ItemForm, SearchItemForm, IssuanceForm, ReceivingForm, AdjustStockForm
-from .models import User, Stock
+from .forms import ItemForm, SearchItemForm, IssuanceForm, AdjustStockForm
+from .models import User, Stock, Item, Site, Location
 
 
 def is_manager(user):
@@ -34,27 +34,17 @@ def app_logout(request):
     return redirect('app_login')
 
 
-def create_item(request):
-    if request.method == 'POST':
-        form = ItemForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('main_page')  # Redirect to main page after item creation
-    else:
-        form = ItemForm()
-
-    return render(request, 'create_item.html', {'form': form})
-
-
 def search_item(request):
     form = SearchItemForm(request.GET)
 
     if form.is_valid():
-        items = form.search()
+        items = form.search_stock()
+        remaining_items = form.search_remaining_items()
     else:
         items = None
+        remaining_items = None
 
-    return render(request, 'search_item.html', {'form': form, 'items': items})
+    return render(request, 'search_item.html', {'form': form, 'items': items, 'remaining_items': remaining_items})
 
 
 def issuance(request, stock_id):
@@ -91,51 +81,16 @@ def issuance(request, stock_id):
 
 
 @user_passes_test(is_manager)
-def receiving(request):
+def create_item(request):
     if request.method == 'POST':
-        form = ReceivingForm(request.POST)
+        form = ItemForm(request.POST)
         if form.is_valid():
-            item = form.cleaned_data['item']
-            site = form.cleaned_data['site']
-            quantity = form.cleaned_data['quantity']
-
-            # Check if the item is already in stock at any location for the selected site
-            existing_stocks = Stock.objects.filter(item=item, site=site)
-
-            context = {
-                'item': item,
-                'site': site,
-                'quantity': quantity,
-                'existing_stocks': existing_stocks,
-            }
-            return render(request, 'receiving_confirmation.html', context)
+            form.save()
+            return redirect('main_page')  # Redirect to main page after item creation
     else:
-        form = ReceivingForm()
+        form = ItemForm()
 
-    context = {
-        'form': form,
-    }
-    return render(request, 'receiving.html', context)
-
-
-"""
-def adjust_stock(request, stock_id):
-    stock = get_object_or_404(Stock, id=stock_id)
-    if request.method == 'POST':
-        form = AdjustStockForm(request.POST)
-        if form.is_valid():
-            # Update stock manually
-            stock.quantity = form.cleaned_data['quantity']
-            stock.save()
-            return redirect('some_view_name')  # Redirect to an appropriate view after adjusting stock
-    else:
-        form = AdjustStockForm(initial={'quantity': stock.quantity})  # Populate form with initial quantity
-    context = {
-        'form': form,
-        'stock': stock,
-    }
-    return render(request, 'adjust_stock.html', context)
-"""
+    return render(request, 'create_item.html', {'form': form})
 
 
 @user_passes_test(is_manager)
