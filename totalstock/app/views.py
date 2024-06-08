@@ -1,13 +1,15 @@
-from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from .forms import ItemForm, SearchItemForm, IssuanceForm, ReceivingForm, AdjustStockForm
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import User, Site, Location, Item, Stock
+from .forms import ItemForm, SearchItemForm, IssuanceForm, ReceivingForm, AdjustStockForm
+from .models import User, Stock
 
 
 def is_manager(user):
     return user.is_authenticated and user.is_manager
+
+
 # Create your views here.
 def main_page(request):
     if request.user.is_authenticated:
@@ -60,15 +62,15 @@ def issuance(request, stock_id):
     item = stock.item  # Get related Item object
     site = stock.location.Site  # Get Site related to the Stock's location
 
-    message =""
+    message = ""
 
     if request.method == 'POST':
         form = IssuanceForm(request.POST)
         if form.is_valid():
             units_used = form.cleaned_data['units_used']
-            if units_used > 0 and units_used <= stock.quantity:
+            if 0 < units_used <= stock.quantity:
                 stock.quantity -= units_used  # Decrease stock amount
-                stock.save()                
+                stock.save()
                 message = "Stock quantity updated."
             else:
                 message = "Error: Invalid number of units. Please enter a valid quantity."
@@ -87,6 +89,7 @@ def issuance(request, stock_id):
     }
     return render(request, 'issuance.html', context)
 
+
 @user_passes_test(is_manager)
 def receiving(request):
     if request.method == 'POST':
@@ -95,7 +98,7 @@ def receiving(request):
             item = form.cleaned_data['item']
             site = form.cleaned_data['site']
             quantity = form.cleaned_data['quantity']
-            
+
             # Check if the item is already in stock at any location for the selected site
             existing_stocks = Stock.objects.filter(item=item, site=site)
 
@@ -141,32 +144,28 @@ def adjust_stock(request, stock_id):
     item = stock.item  # Get related Item object
     site = stock.location.Site  # Get Site related to the Stock's location
 
-    message =""
-
-    initial_data = {
-        'quantity': stock.quantity,
-        'site': site,
-        'location': stock.location,
-    }
+    message = ""
 
     if request.method == 'POST':
-        form = AdjustStockForm(request.POST, initial=initial_data)
+        form = AdjustStockForm(request.POST)
         if form.is_valid():
-            quantity = form.cleaned_data['quantity']
+            new_quantity = form.cleaned_data['quantity']
             new_site = form.cleaned_data['site']
             new_location = form.cleaned_data['location']
 
-            if quantity >= 0:
-                stock.quantity = quantity
-                stock.location = new_location
-                stock.location.Site = new_site
+            if new_quantity >= 0:
+                stock.quantity = new_quantity
+                if new_location:
+                    stock.location = new_location
+                if new_site and stock.location.Site != new_site:
+                    stock.location.Site = new_site
                 stock.save()
                 message = "Stock updated."
             else:
                 message = "Error: Invalid number of units. Please enter a valid quantity."
     else:
-        form = AdjustStockForm(initial= initial_data )
-
+        # Initialize the form with the current stock details
+        form = AdjustStockForm(initial={'quantity': stock.quantity, 'site': site, 'location': stock.location})
 
     context = {
         'item_id': item.id,
@@ -179,6 +178,7 @@ def adjust_stock(request, stock_id):
         'message': message,
     }
     return render(request, 'adjust_stock.html', context)
+
 
 @user_passes_test(is_manager)
 def manage_users(request):

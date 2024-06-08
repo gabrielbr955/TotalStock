@@ -53,14 +53,7 @@ class ReceivingForm(forms.Form):
 
 class AdjustStockForm(forms.Form):
 
-    def __init__(self, *args, initial_site=None, initial_location=None, **kwargs):
-        super(AdjustStockForm, self).__init__(*args, **kwargs)
-        if initial_site:
-            self.fields['site'].initial = initial_site
-        if initial_location:
-            self.fields['location'].initial = initial_location
-
     #stock = forms.ModelChoiceField(queryset=Stock.objects.all(), label='Stock')
-    quantity = forms.DecimalField(max_digits=10, decimal_places=2, min_value=0, label='New Quantity')
-    site = forms.ModelChoiceField(queryset=Site.objects.all(), label='Site')
-    location = forms.ModelChoiceField(queryset=Location.objects.all(), label='Location')
+    quantity = forms.DecimalField(max_digits=10, decimal_places=2, min_value=0, label='New Quantity', initial=0)
+    site = forms.ModelChoiceField(queryset=Site.objects.all(), label='New site', required=False)
+    location = forms.ModelChoiceField(queryset=Location.objects.all(), label='New location', required=False)

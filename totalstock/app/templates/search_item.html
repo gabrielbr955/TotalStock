@@ -38,7 +38,7 @@
                                 {% csrf_token %}
                                 <button type="submit">Consumption</button>
                             </form>
-                            <form method="post" style="display: inline;" action="{% url 'adjust_stock' stock.id %}">
+                            <form method="get" style="display: inline;" action="{% url 'adjust_stock' stock.id %}">
                                 {% csrf_token %}
                                 <button type="submit">Adjust</button>
                             </form>
