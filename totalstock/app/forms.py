@@ -14,8 +14,8 @@ class SearchItemForm(forms.Form):
     location = forms.ModelChoiceField(queryset=Location.objects.all(), required=False, label='Location')
     site = forms.ModelChoiceField(queryset=Site.objects.all(), required=False, label='Site')
 
-#    location = forms.CharField(required=False, label='Location')
-#    site = forms.CharField(required=False, label='Site')
+    #    location = forms.CharField(required=False, label='Location')
+    #    site = forms.CharField(required=False, label='Site')
 
     def search_stock(self):
         # Retrieve cleaned data from the form
@@ -66,13 +66,16 @@ class SearchItemForm(forms.Form):
 
         return remaining_items
 
+
 class IssuanceForm(forms.Form):
     units_used = forms.IntegerField(label='Units Used', min_value=1)
 
 
 class AdjustStockForm(forms.Form):
-
-    #stock = forms.ModelChoiceField(queryset=Stock.objects.all(), label='Stock')
-    quantity = forms.DecimalField(max_digits=10, decimal_places=2, min_value=0, label='New Quantity', initial=0)
+    quantity = forms.DecimalField(max_digits=10, decimal_places=0, min_value=0, label='New Quantity', initial=0)
     site = forms.ModelChoiceField(queryset=Site.objects.all(), label='New site', required=False)
     location = forms.ModelChoiceField(queryset=Location.objects.all(), label='New location', required=False)
+
+
+class EntryStockForm(forms.Form):
+    units_received = forms.DecimalField(max_digits=10, decimal_places=0, min_value=0, label='Quantity', initial=0)

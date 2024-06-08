@@ -1,7 +1,7 @@
 {% extends 'app.html' %}
 
 {% block content %}
-    <h1>Issuance</h1>
+    <h1>Stock Entry</h1>
 
     <h2>Item Details</h2>
     <p>ID: {{ item_id }}</p>
@@ -13,7 +13,7 @@
 
     <hr>
 
-    <h2>Record Consumption</h2>
+    <h2>Record Entry</h2>
     {% if message %}
         <p style="color: {% if 'Error' in message %}red{% else %}green{% endif %};">{{ message }}</p>
     {% endif %}
@@ -21,7 +21,7 @@
         {% csrf_token %}
         {{ form.as_p }}
 
-        <button type="submit">Record Consumption</button>
+        <button type="submit">Record Entry</button>
     </form>
 
     <br>
