@@ -10,6 +10,24 @@
 
     <hr>
 
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px 15px; /* Increase the padding to increase spacing */
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        form {
+            display: inline;
+        }
+    </style>
+
     {% if items %}
         <h2>Items in Stock:</h2>
         <table>
@@ -26,7 +44,7 @@
             </thead>
             <tbody>
                 {% for stock in items %}
-                    <tr>
+                    <tr title="{{ stock.item.description }}">
                         <td>{{ stock.item.id }}</td>
                         <td>{{ stock.item.name }}</td>
                         <td>{{ stock.quantity }}</td>
@@ -38,14 +56,16 @@
                                 {% csrf_token %}
                                 <button type="submit">Consume</button>
                             </form>
-                            <form method="get" style="display: inline;" action="{% url 'adjust_stock' stock.id %}">
-                                {% csrf_token %}
-                                <button type="submit">Adjust</button>
-                            </form>
-                            <form method="get" style="display: inline;" action="{% url 'entry_stock' stock.id %}">
-                                {% csrf_token %}
-                                <button type="submit">Entry</button>
-                            </form>
+                            {% if user.is_staff %}
+                                <form method="get" style="display: inline;" action="{% url 'adjust_stock' stock.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Adjust</button>
+                                </form>
+                                <form method="get" style="display: inline;" action="{% url 'entry_stock' stock.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Entry</button>
+                                </form>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -60,22 +80,25 @@
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Add Stock</th>
+                    {% if user.is_staff %}
+                        <th>Add Stock</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
                 {% for item in remaining_items %}
-                    <tr>
+                    <tr title="{{ item.description }}">
                         <td>{{ item.id }}</td>
                         <td>{{ item.name }}</td>
-                        <td>
-                            <form method="post" action="{% url 'create_stock' item.id %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="item_id" value="{{ item.id }}">
-                                <button type="submit">Create Stock Entry</button>
-                            </form>
-
-                        </td>
+                        {% if user.is_staff %}
+                            <td>
+                                <form method="post" action="{% url 'create_stock' item.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                                    <button type="submit">Create Stock Entry</button>
+                                </form>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>

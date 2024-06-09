@@ -7,7 +7,14 @@ from .models import User, Stock, Item, Site, Location
 
 
 def is_manager(user):
-    return user.is_authenticated and user.is_manager
+    return (user.is_authenticated
+            and user.groups.filter(name='manager').exists())
+
+
+def is_staff(user):
+    return (user.is_authenticated
+            and (user.groups.filter(name='staff').exists()
+                 or user.groups.filter(name='manager').exists()))
 
 
 # Create your views here.
@@ -80,6 +87,7 @@ def issuance(request, stock_id):
     return render(request, 'issuance.html', context)
 
 
+@user_passes_test(is_staff)
 def entry_stock(request, stock_id):
     stock = get_object_or_404(Stock, id=stock_id)  # Get Stock object by ID
     item = stock.item  # Get related Item object
@@ -111,6 +119,36 @@ def entry_stock(request, stock_id):
         'message': message,
     }
     return render(request, 'entry_stock.html', context)
+
+
+@user_passes_test(is_staff)
+def create_stock(request, item_id):
+    item = get_object_or_404(Item, id=item_id)
+
+    message = ""
+
+    if request.method == 'POST':
+        form = AdjustStockForm(request.POST)
+        if form.is_valid():
+            site = form.cleaned_data['site']
+            location = form.cleaned_data['location']
+            quantity = form.cleaned_data['quantity']
+
+            stock = Stock(item=item, location=location, site=site, quantity=quantity)
+            stock.save()
+            message = "New stock entry created."
+            return redirect('search_item')  # Redirect to the search item page after successful entry
+    else:
+        form = AdjustStockForm(request.GET)
+
+    context = {
+        'item_id': item.id,
+        'item_name': item.name,
+        'item_description': item.description,
+        'form': form,
+        'message': message,
+    }
+    return render(request, 'create_stock.html', context)
 
 
 @user_passes_test(is_manager)
@@ -162,36 +200,6 @@ def adjust_stock(request, stock_id):
         'location': stock.location.name,
         'site_name': site.name,
         'stock_quantity': stock.quantity,
-        'form': form,
-        'message': message,
-    }
-    return render(request, 'adjust_stock.html', context)
-
-
-@user_passes_test(is_manager)
-def create_stock(request, item_id):
-    item = get_object_or_404(Item, id=item_id)
-
-    message = ""
-
-    if request.method == 'POST':
-        form = EntryStockForm(request.POST)
-        if form.is_valid():
-            site = form.cleaned_data['site']
-            location = form.cleaned_data['location']
-            quantity = form.cleaned_data['quantity']
-
-            stock = Stock(item=item, location=location, site=site, quantity=quantity)
-            stock.save()
-            message = "New stock entry created."
-            return redirect('search_item')  # Redirect to the search item page after successful entry
-    else:
-        form = EntryStockForm(request.GET)
-
-    context = {
-        'item_id': item.id,
-        'item_name': item.name,
-        'item_description': item.description,
         'form': form,
         'message': message,
     }

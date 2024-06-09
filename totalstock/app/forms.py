@@ -49,20 +49,17 @@ class SearchItemForm(forms.Form):
         location = self.cleaned_data.get('location')
         site = self.cleaned_data.get('site')
 
+        # First, get items in stock based on search parameters
+        items_in_stock = self.search_stock().values_list('item', flat=True)
+
         # Filter items based on provided parameters
-        remaining_items = Item.objects.exclude(stock__isnull=False)
+        remaining_items = Item.objects.exclude(id__in=items_in_stock)
 
         if name:
             remaining_items = remaining_items.filter(name__icontains=name)
 
         if description:
             remaining_items = remaining_items.filter(description__icontains=description)
-
-        if site:
-            remaining_items = remaining_items.filter(stock__location__Site=site)
-
-        if location:
-            remaining_items = remaining_items.filter(stock__location=location)
 
         return remaining_items
 
