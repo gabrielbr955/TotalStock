@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    is_manager = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 

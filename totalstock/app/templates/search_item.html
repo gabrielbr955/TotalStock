@@ -1,4 +1,6 @@
 {% extends 'app.html' %}
+{% load static %}
+{% load user_filters %}
 
 {% block content %}
     <h1>Search Item</h1>
@@ -56,16 +58,19 @@
                                 {% csrf_token %}
                                 <button type="submit">Consume</button>
                             </form>
-                            {% if user.is_staff %}
-                                <form method="get" style="display: inline;" action="{% url 'adjust_stock' stock.id %}">
-                                    {% csrf_token %}
-                                    <button type="submit">Adjust</button>
-                                </form>
+                            {% if user|has_group:'staff' %}
                                 <form method="get" style="display: inline;" action="{% url 'entry_stock' stock.id %}">
                                     {% csrf_token %}
                                     <button type="submit">Entry</button>
                                 </form>
                             {% endif %}
+                            {% if user|has_group:'manager' %}
+                                <form method="get" style="display: inline;" action="{% url 'adjust_stock' stock.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Adjust</button>
+                                </form>
+                            {% endif %}
+
                         </td>
                     </tr>
                 {% endfor %}

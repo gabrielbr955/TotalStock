@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import ItemForm, SearchItemForm, IssuanceForm, AdjustStockForm, EntryStockForm
@@ -97,14 +98,17 @@ def entry_stock(request, stock_id):
 
     if request.method == 'POST':
         form = EntryStockForm(request.POST)
-        if form.is_valid():
-            units_received = form.cleaned_data['units_received']
-            if units_received > 0:
-                stock.quantity += units_received  # Decrease stock amount
-                stock.save()
-                message = "Stock quantity updated."
-            else:
-                message = "Error: Invalid number of units. Please enter a valid quantity."
+        if not stock.location or stock.location.Site != site:
+            message = "Error: The location does not exist within the site."
+        else:
+            if form.is_valid():
+                units_received = form.cleaned_data['units_received']
+                if units_received > 0:
+                    stock.quantity += units_received  # Decrease stock amount
+                    stock.save()
+                    message = "Stock quantity updated."
+                else:
+                    message = "Error: Invalid number of units. Please enter a valid quantity."
     else:
         form = EntryStockForm(request.GET)
 
@@ -119,7 +123,6 @@ def entry_stock(request, stock_id):
         'message': message,
     }
     return render(request, 'entry_stock.html', context)
-
 
 @user_passes_test(is_staff)
 def create_stock(request, item_id):
@@ -208,5 +211,42 @@ def adjust_stock(request, stock_id):
 
 @user_passes_test(is_manager)
 def manage_users(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        is_manager = request.POST.get('is_manager') == 'on'
+        is_staff = request.POST.get('is_staff') == 'on'
+
+        user = User.objects.get(id=user_id)
+
+        manager_group = Group.objects.get(name='manager')
+        staff_group = Group.objects.get(name='staff')
+
+        if is_manager:
+            user.groups.add(manager_group)
+        else:
+            user.groups.remove(manager_group)
+
+        if is_staff:
+            user.groups.add(staff_group)
+        else:
+            user.groups.remove(staff_group)
+
+        user.save()
+
+        return redirect('manage_users')
+
     users = User.objects.all()
-    return render(request, 'manage_users.html', {'users': users})
+    users = User.objects.all()
+    user_data = []
+    for user in users:
+        user_data.append({
+            'id': user.id,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'is_manager': user.groups.filter(name='manager').exists(),
+            'is_staff': user.groups.filter(name='staff').exists(),
+        })
+
+    return render(request, 'manage_users.html', {'users': user_data})

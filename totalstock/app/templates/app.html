@@ -1,3 +1,6 @@
+{% load static %}
+{% load user_filters %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,10 +20,17 @@
     </header>
     <p>Welcome, {{ user.first_name }}! (<a href="{% url 'app_logout' %}">Logout</a>)</p>
 
+    User Profile(s):
+    <ul>
+        {% for group in user.groups.all %}
+            <li>{{ group.name }}</li>
+        {% endfor %}
+    </ul>
+
     <hr>
     <ul>
         <li><a href="{% url 'search_item' %}" class="sidebar-button">Search Item</a></li>
-        {% if user.is_manager %}
+        {% if user|has_group:'manager' %}
             <li><a href="{% url 'create_item' %}" class="sidebar-button">Create Item</a></li>
             <li><a href="{% url 'manage_users' %}" class="sidebar-button">Manage Users</a></li>
         {% endif %}
