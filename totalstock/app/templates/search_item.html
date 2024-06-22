@@ -97,7 +97,7 @@
                         <td>{{ item.name }}</td>
                         {% if user.is_staff %}
                             <td>
-                                <form method="post" action="{% url 'create_stock' item.id %}">
+                                <form method="get" action="{% url 'create_stock' item.id %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="item_id" value="{{ item.id }}">
                                     <button type="submit">Create Stock Entry</button>

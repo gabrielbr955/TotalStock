@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import ItemForm, SearchItemForm, IssuanceForm, AdjustStockForm, EntryStockForm
+from .forms import ItemForm, SearchItemForm, IssuanceForm, AdjustStockForm, EntryStockForm, CreateStockForm
 from .models import User, Stock, Item, Site, Location
 
 
@@ -73,7 +73,7 @@ def issuance(request, stock_id):
             else:
                 message = "Error: Invalid number of units. Please enter a valid quantity."
     else:
-        form = IssuanceForm(request.GET)
+        form = IssuanceForm()
 
     context = {
         'item_id': item.id,
@@ -98,19 +98,16 @@ def entry_stock(request, stock_id):
 
     if request.method == 'POST':
         form = EntryStockForm(request.POST)
-        if not stock.location or stock.location.Site != site:
-            message = "Error: The location does not exist within the site."
-        else:
-            if form.is_valid():
-                units_received = form.cleaned_data['units_received']
-                if units_received > 0:
-                    stock.quantity += units_received  # Decrease stock amount
-                    stock.save()
-                    message = "Stock quantity updated."
-                else:
-                    message = "Error: Invalid number of units. Please enter a valid quantity."
+        if form.is_valid():
+            units_received = form.cleaned_data['units_received']
+            if units_received > 0:
+                stock.quantity += units_received  # Decrease stock amount
+                stock.save()
+                message = "Stock quantity updated."
+            else:
+                message = "Error: Invalid number of units. Please enter a valid quantity."
     else:
-        form = EntryStockForm(request.GET)
+        form = EntryStockForm()
 
     context = {
         'item_id': item.id,
@@ -124,6 +121,7 @@ def entry_stock(request, stock_id):
     }
     return render(request, 'entry_stock.html', context)
 
+
 @user_passes_test(is_staff)
 def create_stock(request, item_id):
     item = get_object_or_404(Item, id=item_id)
@@ -131,18 +129,26 @@ def create_stock(request, item_id):
     message = ""
 
     if request.method == 'POST':
-        form = AdjustStockForm(request.POST)
+        form = CreateStockForm(request.POST)
         if form.is_valid():
+            quantity = form.cleaned_data['quantity']
             site = form.cleaned_data['site']
             location = form.cleaned_data['location']
-            quantity = form.cleaned_data['quantity']
 
-            stock = Stock(item=item, location=location, site=site, quantity=quantity)
-            stock.save()
-            message = "New stock entry created."
-            return redirect('search_item')  # Redirect to the search item page after successful entry
+            if quantity <= 0:
+                message = "Error: Invalid number of units. Please enter a valid quantity."
+            elif (location and not site) or (not location and site):
+                message = "Error: Invalid Location and Site combination"
+            elif not location or not site:
+                message = "Error: invalid Location and Site combination"
+            else:
+                if location in site.locations.all():
+                    stock = Stock(item=item, location=location, site=site, quantity=quantity)
+                    message = "Stock creation Successful"
+                else:
+                    message = "Error: invalid Location and Site combination"
     else:
-        form = AdjustStockForm(request.GET)
+        form = CreateStockForm()
 
     context = {
         'item_id': item.id,
@@ -182,16 +188,23 @@ def adjust_stock(request, stock_id):
             new_site = form.cleaned_data['site']
             new_location = form.cleaned_data['location']
 
-            if new_quantity >= 0:
-                stock.quantity = new_quantity
-                if new_location:
-                    stock.location = new_location
-                if new_site and stock.location.Site != new_site:
-                    stock.location.Site = new_site
-                stock.save()
-                message = "Stock updated."
-            else:
+            if new_quantity <= 0:
                 message = "Error: Invalid number of units. Please enter a valid quantity."
+            elif (new_location and not new_site) or (not new_location and new_site):
+                message = "Error: invalid Location and Site combination"
+            elif not new_location and not new_site:
+                stock.quantity = new_quantity
+                stock.save()
+                message = "Adjust successful"
+            else:
+                if new_location in new_site.locations.all():
+                    stock.quantity = new_quantity
+                    stock.location = new_location
+                    stock.location.Site = new_site
+                    stock.save()
+                    message = "Adjust successful"
+                else:
+                    message = "Error: invalid Location and Site combination"
     else:
         # Initialize the form with the current stock details
         form = AdjustStockForm(initial={'quantity': stock.quantity, 'site': site, 'location': stock.location})

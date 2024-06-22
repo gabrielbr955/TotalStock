@@ -73,6 +73,11 @@ class AdjustStockForm(forms.Form):
     site = forms.ModelChoiceField(queryset=Site.objects.all(), label='New site', required=False)
     location = forms.ModelChoiceField(queryset=Location.objects.all(), label='New location', required=False)
 
+class CreateStockForm(forms.Form):
+    quantity = forms.DecimalField(max_digits=10, decimal_places=0, min_value=0, label='Quantity', initial=0)
+    site = forms.ModelChoiceField(queryset=Site.objects.all(), label='Site')
+    location = forms.ModelChoiceField(queryset=Location.objects.all(), label='Location')
+
 
 class EntryStockForm(forms.Form):
     units_received = forms.DecimalField(max_digits=10, decimal_places=0, min_value=0, label='Quantity', initial=0)
