@@ -36,7 +36,8 @@ TotalStock is an inventory management system designed to help users track stock 
 
     ```sh
     python3 -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    source venv/bin/activate  
+   # On Windows use `venv\Scripts\activate`
     ```
 
 3. **Install dependencies**:
@@ -74,7 +75,7 @@ TotalStock is an inventory management system designed to help users track stock 
 
 3. **Add Items**: Managers can add items through the 'Create Item' page.
 
-4. **Manage Users**: Assign roles to users through the 'Manage Users' page. Check the 'Is Manager' or 'Is Staff' checkboxes as needed.
+4. **Manage Users**: Assign roles to users through the 'Manage Users' page. Check the 'Manager' or 'Staff' groups as needed.
 
 5. **Search and Manage Stock**: Use the 'Search Item' functionality to find items in stock, adjust quantities, and manage stock entries and issuance.
 
@@ -91,6 +92,12 @@ TotalStock is an inventory management system designed to help users track stock 
     - **admin.py**: Django admin customizations
     - **settings.py**: Django settings
 
+## To do
+- **Notification system**: Notification sistem with filters by user hole.
+- **MRP/**: Implement minimum resupply point in stock and option to create buy order.
+- **Integration with logistics/**: Integrate app with tracking information of bought items and new receivings.
+- **SignUp and forgot password implementations/**: Now, these functions are accessible only from the admin portal.
+
 ## Contributing
 
 Contributions are welcome! Please follow these steps to contribute:
@@ -104,13 +111,9 @@ Contributions are welcome! Please follow these steps to contribute:
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Acknowledgements
-
-- [Django](https://www.djangoproject.com/)
-- [Bootstrap](https://getbootstrap.com/)
 
 ## Contact
 
 For questions or suggestions, please open an issue in the repository or contact the project maintainer:
 
-- **GitHub**: [yourusername](https://github.com/yourusername)
+- **GitHub**: [Gabrielbr955](https://github.com/yourusername)
