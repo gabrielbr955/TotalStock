@@ -94,9 +94,9 @@ TotalStock is an inventory management system designed to help users track stock 
 
 ## To do
 - **Notification system**: Notification sistem with filters by user hole.
-- **MRP/**: Implement minimum resupply point in stock and option to create buy order.
-- **Integration with logistics/**: Integrate app with tracking information of bought items and new receivings.
-- **SignUp and forgot password implementations/**: Now, these functions are accessible only from the admin portal.
+- **MRP**: Implement minimum resupply point in stock and option to create buy order.
+- **Integration with logistics**: Integrate app with tracking information of bought items and new receivings.
+- **SignUp and forgot password implementations**: Now, these functions are accessible only from the admin portal.
 
 ## Contributing
 
