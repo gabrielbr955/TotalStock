@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseForbidden
 
 from .forms import ItemForm, SearchItemForm, IssuanceForm, AdjustStockForm, EntryStockForm, CreateStockForm
 from .models import User, Stock, Item, Site, Location
@@ -144,6 +145,7 @@ def create_stock(request, item_id):
             else:
                 if location in site.locations.all():
                     stock = Stock(item=item, location=location, site=site, quantity=quantity)
+                    stock.save()
                     message = "Stock creation Successful"
                 else:
                     message = "Error: invalid Location and Site combination"
@@ -210,6 +212,7 @@ def adjust_stock(request, stock_id):
         form = AdjustStockForm(initial={'quantity': stock.quantity, 'site': site, 'location': stock.location})
 
     context = {
+        'stock_id': stock_id,
         'item_id': item.id,
         'item_name': item.name,
         'item_description': item.description,
@@ -221,6 +224,14 @@ def adjust_stock(request, stock_id):
     }
     return render(request, 'adjust_stock.html', context)
 
+@user_passes_test(is_manager)
+def delete_stock(request, stock_id):
+    if request.method == 'POST':
+        stock = get_object_or_404(Stock, id=stock_id)
+        stock.delete()
+        return redirect('search_item')  # Redirect to the search page or any other appropriate page
+
+    return HttpResponseForbidden("You are not allowed to access this page.")
 
 @user_passes_test(is_manager)
 def manage_users(request):
