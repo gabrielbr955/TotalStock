@@ -1,9 +1,5 @@
-# Todowise
-Projecto de integração de sistemas - ESTG Portalegre
-
-Exemplo de utilização
-
 # TotalStock
+Projecto de integração de sistemas - ESTG Portalegre
 
 TotalStock is an inventory management system designed to help users track stock levels, manage items, and handle user roles within a site-based structure.
 
